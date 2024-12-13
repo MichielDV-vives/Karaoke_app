@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>Demucs Commands</title>
+    <script>
+        async function runCommand(command) {
+            const response = await fetch('/run_command/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ command: command })
+            });
+            const result = await response.json();
+            document.getElementById('output').innerText = result.output || result.error;
+        }
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('/upload/', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('output').innerText = result.info;
+        }
+
+        async function runScript() {
+            const response = await fetch('/run_script/', {
+                method: 'POST'
+            });
+            const result = await response.json();
+            document.getElementById('output').innerText = result.output || result.error;
+        }
+    </script>
 </head>
 <body>
-$END$
+    <h1>Demucs Commands</h1>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload File</button>
+    <button onclick="runCommand('apt update')">Update Packages</button>
+    <button onclick="runCommand('apt install -y ffmpeg')">Install FFmpeg</button>
+    <button onclick="runScript()">Run Demucs</button>
+    <pre id="output"></pre>
 </body>
 </html>
